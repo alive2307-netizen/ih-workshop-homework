@@ -76,9 +76,9 @@ public class PlayerController : MonoBehaviour
     //Applying calculated velocity in FixedUpdate so it's in sync with the rest of physics engine
     void FixedUpdate()
     {
-        var velocity = rigidBody.velocity;
+        var velocity = rigidBody.linearVelocity;
         velocity.x = lastVelocityX;
-        rigidBody.velocity = velocity;
+        rigidBody.linearVelocity = velocity;
     }
 
     void JumpStart(float force)

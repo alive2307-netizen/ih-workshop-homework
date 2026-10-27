@@ -21,6 +21,11 @@ public class Game : MonoBehaviour
     public GameObject TextPaused;
     public Text TextHealth;
 
+    [Header("Timer Settings")]
+    public Text TextTime; 
+    public float TimeLimit = 60f; 
+    private float timeRemaining;
+
     bool isPaused;
     float camDeltaX;
     bool gameOver;
@@ -31,6 +36,8 @@ public class Game : MonoBehaviour
         AssignPlayer();
         AssignCamera();
         PlayerTrackingMaxX = Goal.transform.position.x - 3.0f;
+        
+        timeRemaining = TimeLimit;
     }
 
     void AssignPlayer()
@@ -67,13 +74,30 @@ public class Game : MonoBehaviour
         TextHealth.text = $"Health: {(int)Player.Health}";
         Player.Move(input.GetMovementDirection(), input.IsJumpPressed(), input.IsCrouchPressed());
         
+        // Логика таймера
+        if (timeRemaining > 0)
+        {
+            timeRemaining -= Time.deltaTime;
+            if (TextTime != null)
+            {
+                int minutes = Mathf.FloorToInt(timeRemaining / 60);
+                int seconds = Mathf.FloorToInt(timeRemaining % 60);
+                TextTime.text = $"Time: {minutes:00}:{seconds:00}";
+            }
+        }
+        else
+        {
+            timeRemaining = 0;
+            if (TextTime != null) TextTime.text = "Time: 00:00";
+            Lose();
+        }
+
         if(Player.transform.position.x > Goal.transform.position.x)
             Win();
         else if(Player.Health < 0)
             Lose();
     }
 
-    //Making camera trail the player in LateUpdate because player's new position is ready by then
     void LateUpdate()
     {
         CameraUpdateTrailing();
